@@ -1,0 +1,21 @@
+[package]
+name = "vietcode-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "vietcode"
+path = "src/main.rs"
+
+[dependencies]
+vietcode-cortex = { path = "../vietcode-cortex" }
+vietcode-core = { path = "../vietcode-core" }
+vietcode-llm = { path = "../vietcode-llm" }
+clap.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tokio.workspace = true

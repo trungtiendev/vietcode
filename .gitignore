@@ -1,0 +1,16 @@
+# Rust build artifacts
+target/
+
+# VietCode generated database
+.vietcode/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store

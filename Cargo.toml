@@ -1,0 +1,44 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/vietcode-cortex",
+    "crates/vietcode-core",
+    "crates/vietcode-llm",
+    "crates/vietcode-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/vietcode/vietcode"
+
+[workspace.dependencies]
+# Core
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Async
+tokio = { version = "1", features = ["full"] }
+
+# Database
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+tabled = "0.17"
+
+# Tree-sitter
+tree-sitter = "0.24"
+tree-sitter-rust = "0.23"
+
+# HTTP (cho LLM providers)
+reqwest = { version = "0.12", features = ["json"] }
+
+# Testing
+insta = "1"
+tempfile = "3"
