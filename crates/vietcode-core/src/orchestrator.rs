@@ -95,26 +95,23 @@ impl Orchestrator {
         let mut code_patterns = Vec::new();
         if let Some(ref target) = intent.target_file {
             let target_path = Path::new(target);
-            if target_path.exists() {
-                if let Ok(source) = std::fs::read_to_string(target_path) {
+            if target_path.exists()
+                && let Ok(source) = std::fs::read_to_string(target_path) {
                     code_patterns.push(source);
                 }
-            }
         }
 
         // Nếu không có file đích, lấy pattern từ file gần nhất trong kết quả
-        if code_patterns.is_empty() {
-            if let Some(sym) = symbols.first() {
+        if code_patterns.is_empty()
+            && let Some(sym) = symbols.first() {
                 let sym_path = Path::new(&sym.file_path);
-                if sym_path.exists() {
-                    if let Ok(source) = std::fs::read_to_string(sym_path) {
+                if sym_path.exists()
+                    && let Ok(source) = std::fs::read_to_string(sym_path) {
                         // Chỉ lấy 50 dòng đầu làm pattern
                         let lines: Vec<&str> = source.lines().take(50).collect();
                         code_patterns.push(lines.join("\n"));
                     }
-                }
             }
-        }
 
         Ok(CodebaseContext {
             relevant_symbols,

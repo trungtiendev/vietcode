@@ -263,11 +263,10 @@ pub fn extract_edges(
 fn get_call_name(node: &tree_sitter::Node, source: &str) -> Option<String> {
     let func_node = node.child_by_field_name("function")?;
     let text = func_node.utf8_text(source.as_bytes()).ok()?;
-    if func_node.kind() == "field_expression" {
-        if let Some(field) = func_node.child_by_field_name("field") {
+    if func_node.kind() == "field_expression"
+        && let Some(field) = func_node.child_by_field_name("field") {
             return field.utf8_text(source.as_bytes()).ok().map(|s| s.to_string());
         }
-    }
     Some(text.to_string())
 }
 
@@ -293,9 +292,9 @@ fn walk_for_edges(
     edges: &mut Vec<Edge>,
 ) {
     // Call edges
-    if node.kind() == "call_expression" {
-        if let Some(call_name) = get_call_name(&node, source) {
-            if known_symbols.contains_key(&call_name) {
+    if node.kind() == "call_expression"
+        && let Some(call_name) = get_call_name(&node, source)
+            && known_symbols.contains_key(&call_name) {
                 let start = node.start_position();
                 edges.push(Edge {
                     from_symbol: String::new(),
@@ -305,12 +304,10 @@ fn walk_for_edges(
                     line: start.row + 1,
                 });
             }
-        }
-    }
 
     // Type edges (struct fields)
-    if node.kind() == "field_declaration" {
-        if let Some(type_node) = node.child_by_field_name("type") {
+    if node.kind() == "field_declaration"
+        && let Some(type_node) = node.child_by_field_name("type") {
             let type_text = type_node.utf8_text(source.as_bytes()).unwrap_or("").to_string();
             let type_name = type_text
                 .replace("Vec<", "").replace("Option<", "").replace("HashMap<", "")
@@ -328,7 +325,6 @@ fn walk_for_edges(
                 });
             }
         }
-    }
 
     // Import edges
     if node.kind() == "use_declaration" {

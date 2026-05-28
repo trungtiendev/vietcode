@@ -101,12 +101,11 @@ fn extract_rust_symbols(
     // Xác định nếu node hiện tại là một module → tạo module_path mới
     let mut current_module_path = module_path.to_vec();
 
-    if node.kind() == "mod_item" {
-        if let Some(name_node) = node.child_by_field_name("name") {
+    if node.kind() == "mod_item"
+        && let Some(name_node) = node.child_by_field_name("name") {
             let module_name = name_node.utf8_text(source.as_bytes()).unwrap_or("").to_string();
             current_module_path.push(module_name);
         }
-    }
 
     // Xác định kind và extract nếu là symbol
     let kind = match node.kind() {
@@ -123,8 +122,8 @@ fn extract_rust_symbols(
         _ => None,
     };
 
-    if let Some(symbol_kind) = kind {
-        if let Some(symbol) = make_rust_symbol(
+    if let Some(symbol_kind) = kind
+        && let Some(symbol) = make_rust_symbol(
             &node,
             source,
             file_path,
@@ -134,7 +133,6 @@ fn extract_rust_symbols(
         ) {
             symbols.push(symbol);
         }
-    }
 
     // Đệ quy duyệt children
     let mut cursor = node.walk();

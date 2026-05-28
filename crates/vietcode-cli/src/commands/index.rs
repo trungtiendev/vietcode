@@ -42,9 +42,9 @@ pub fn run(dir: &str, db: &str) -> Result<()> {
     }
 
     // Hiển thị thống kê graph
-    if let Ok(graph) = vietcode_cortex::graph::RelationGraph::open(db_path) {
-        if let Ok(total) = graph.total_edges() {
-            if total > 0 {
+    if let Ok(graph) = vietcode_cortex::graph::RelationGraph::open(db_path)
+        && let Ok(total) = graph.total_edges()
+            && total > 0 {
                 println!("\nRelation graph:");
                 println!("  Total edges: {}", total);
                 if let Ok(by_type) = graph.count_by_type() {
@@ -53,8 +53,6 @@ pub fn run(dir: &str, db: &str) -> Result<()> {
                     }
                 }
             }
-        }
-    }
 
     Ok(())
 }

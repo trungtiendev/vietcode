@@ -8,6 +8,12 @@ use anyhow::Result;
 /// Placeholder cho file watcher.
 pub struct FileWatcher;
 
+impl Default for FileWatcher {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FileWatcher {
     pub fn new() -> Self {
         Self
