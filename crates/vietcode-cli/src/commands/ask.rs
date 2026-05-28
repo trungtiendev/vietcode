@@ -54,6 +54,19 @@ async fn run_async(task: &str) -> Result<()> {
         println!("Đã ghi code vào: {}", file);
     }
 
+    if !result.gate_results.is_empty() {
+        println!("\n=== VERIFY GATES ===");
+        for gate in &result.gate_results {
+            let icon = if gate.passed { "✓" } else { "✗" };
+            println!("  {} {} ({}ms)", icon, gate.gate, gate.duration_ms);
+            if !gate.passed && !gate.output.is_empty() {
+                for line in gate.output.lines().take(5) {
+                    println!("      {}", line);
+                }
+            }
+        }
+    }
+
     println!("\nContext sử dụng:");
     println!("  Symbols liên quan: {}", result.context_used.relevant_symbols.len());
     for sym in &result.context_used.relevant_symbols {

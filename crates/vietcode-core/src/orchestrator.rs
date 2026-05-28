@@ -9,6 +9,7 @@ use vietcode_cortex::index::SymbolIndex;
 use vietcode_llm::provider::Provider;
 
 use crate::agent::{AgentOutput, CodebaseContext, Coder};
+use crate::pipeline::{Gate, GateResult, Pipeline};
 
 /// Orchestrator điều phối toàn bộ flow xử lý task.
 pub struct Orchestrator {
@@ -58,11 +59,21 @@ impl Orchestrator {
             written_file = Some(file_path.clone());
         }
 
+        // Chạy pipeline gates nếu có file được ghi
+        let gate_results = if written_file.is_some() {
+            let pipeline = Pipeline::new();
+            let gates = vec![Gate::Build, Gate::Test];
+            pipeline.run_gates(&gates).await.unwrap_or_default()
+        } else {
+            vec![]
+        };
+
         Ok(TaskResult {
             output,
             context_used: context,
             written_file,
             intent,
+            gate_results,
         })
     }
 
@@ -120,6 +131,7 @@ pub struct TaskResult {
     pub context_used: CodebaseContext,
     pub written_file: Option<String>,
     pub intent: TaskIntent,
+    pub gate_results: Vec<GateResult>,
 }
 
 /// Intent parsed từ natural language task.

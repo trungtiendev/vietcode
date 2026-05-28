@@ -80,7 +80,7 @@ cargo run -- ask "viết hàm authenticate"
 
 - Symbol index (Tầng 1): works — parse → SQLite + FTS5 full-text search
 - Relation graph (Tầng 2): works — call/import/type edges with BFS shortest-path
-- Core pipeline: **stubs** — `Planner`, `Router`, `Pipeline`, `FileWatcher` all return no-op or dummy values
+- Core pipeline: **stubs** — `Planner`, `Router`, `FileWatcher` return no-op/dummy; `Pipeline` gates (build/test) now real
 - LLM providers: Ollama + DeepSeek work; Anthropic/OpenAI are still stubs
 - CI/CD: GitHub Actions (`.github/workflows/ci.yml`) — build + test on push/PR yet
 
