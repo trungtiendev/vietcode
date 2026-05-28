@@ -1,6 +1,6 @@
 //! DeepSeek provider — DeepSeek models.
 //!
-//! Sử dụng API OpenAI-compatible tại https://api.deepseek.com/v1/chat/completions.
+//! Sử dụng API tại https://api.deepseek.com/chat/completions.
 //! Cần biến môi trường DEEPSEEK_API_KEY.
 
 use crate::provider::{ChatRequest, ChatResponse, Provider};
@@ -40,7 +40,7 @@ impl Provider for DeepSeekProvider {
     }
 
     async fn chat(&self, request: ChatRequest) -> Result<ChatResponse> {
-        let url = format!("{}/v1/chat/completions", self.base_url);
+        let url = format!("{}/chat/completions", self.base_url);
 
         let body = serde_json::json!({
             "model": request.model,

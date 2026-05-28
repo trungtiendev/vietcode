@@ -15,7 +15,7 @@ async fn run_async(task: &str) -> Result<()> {
 
     let model = std::env::var("VIETCODE_MODEL").unwrap_or_else(|_| {
         match provider_name.as_str() {
-            "deepseek" => "deepseek-chat".to_string(),
+            "deepseek" => "deepseek-v4-pro".to_string(),
             _ => "codellama:7b".to_string(),
         }
     });

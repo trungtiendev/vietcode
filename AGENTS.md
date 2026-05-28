@@ -59,7 +59,7 @@ cargo run -- ask "viết hàm authenticate"
 # DeepSeek (cloud, OpenAI-compatible API)
 $env:VIETCODE_PROVIDER = "deepseek"
 $env:DEEPSEEK_API_KEY = "sk-..."
-$env:VIETCODE_MODEL = "deepseek-chat"
+$env:VIETCODE_MODEL = "deepseek-v4-pro"
 cargo run -- ask "viết hàm authenticate"
 ```
 
