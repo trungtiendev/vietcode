@@ -82,7 +82,7 @@ cargo run -- ask "viết hàm authenticate"
 - Relation graph (Tầng 2): works — call/import/type edges with BFS shortest-path
 - Core pipeline: **stubs** — `Planner`, `Router`, `Pipeline`, `FileWatcher` all return no-op or dummy values
 - LLM providers: Ollama + DeepSeek work; Anthropic/OpenAI are still stubs
-- No CI/CD yet
+- CI/CD: GitHub Actions (`.github/workflows/ci.yml`) — build + test on push/PR yet
 
 ## Gotchas
 
