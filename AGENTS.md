@@ -5,7 +5,7 @@
 4 crates under `crates/`:
 - **vietcode-cortex** — tree-sitter + SQLite codebase index (parser, symbol index, relation graph, file watcher)
 - **vietcode-core** — agent pipeline orchestrator (planner, router, pipeline are stubs)
-- **vietcode-llm** — LLM provider abstraction (only `OllamaProvider` is real; `Anthropic`, `OpenAI`, `DeepSeek` are stubs)
+- **vietcode-llm** — LLM provider abstraction (`OllamaProvider` and `DeepSeekProvider` are real; `Anthropic`, `OpenAI` are stubs)
 - **vietcode-cli** — CLI binary via clap
 
 ## Build & Test
@@ -50,6 +50,23 @@ cargo run -- impact login
 
 Default database: `.vietcode/index.db`
 
+## LLM Providers
+
+```powershell
+# Ollama (default, local)
+cargo run -- ask "viết hàm authenticate"
+
+# DeepSeek (cloud, OpenAI-compatible API)
+$env:VIETCODE_PROVIDER = "deepseek"
+$env:DEEPSEEK_API_KEY = "sk-..."
+$env:VIETCODE_MODEL = "deepseek-chat"
+cargo run -- ask "viết hàm authenticate"
+```
+
+- `VIETCODE_PROVIDER` — `ollama` (default) hoặc `deepseek`
+- `OLLAMA_URL` — mặc định `http://localhost:11434`
+- `DEEPSEEK_API_KEY` — bắt buộc khi dùng deepseek
+
 ## Key Conventions
 
 - **Vietnamese** for comments, commit messages, and user-facing CLI
@@ -64,12 +81,10 @@ Default database: `.vietcode/index.db`
 - Symbol index (Tầng 1): works — parse → SQLite + FTS5 full-text search
 - Relation graph (Tầng 2): works — call/import/type edges with BFS shortest-path
 - Core pipeline: **stubs** — `Planner`, `Router`, `Pipeline`, `FileWatcher` all return no-op or dummy values
-- LLM providers: only Ollama works; Anthropic/OpenAI/DeepSeek return placeholder text
-- No CI/CD, no git repo, no `.gitignore` at root
+- LLM providers: Ollama + DeepSeek work; Anthropic/OpenAI are still stubs
+- No CI/CD yet
 
 ## Gotchas
 
-- `%SystemDrive%/` directory and `vs_buildtools.exe` in repo root are accidental artifacts
 - `Cargo.lock` should be committed (binary crate workspace)
 - Building the graph requires the symbol index to exist first (`build_index` in `index.rs` parses source and then builds graph)
-- The `shortest_path` BFS uses `Vec::insert(0, …)` (O(n) enqueue) — not `VecDeque`

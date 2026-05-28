@@ -1,14 +1,35 @@
 //! DeepSeek provider — DeepSeek models.
+//!
+//! Sử dụng API OpenAI-compatible tại https://api.deepseek.com/v1/chat/completions.
+//! Cần biến môi trường DEEPSEEK_API_KEY.
 
-use anyhow::Result;
 use crate::provider::{ChatRequest, ChatResponse, Provider};
+use anyhow::{Context, Result};
 
-/// Placeholder — Phase 3 sẽ implement đầy đủ.
-pub struct DeepSeekProvider;
+const DEFAULT_BASE_URL: &str = "https://api.deepseek.com";
+
+pub struct DeepSeekProvider {
+    api_key: String,
+    base_url: String,
+    http_client: reqwest::Client,
+}
 
 impl DeepSeekProvider {
-    pub fn new(_api_key: &str) -> Self {
-        Self
+    pub fn new(api_key: &str) -> Self {
+        Self {
+            api_key: api_key.to_string(),
+            base_url: DEFAULT_BASE_URL.to_string(),
+            http_client: reqwest::Client::new(),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn with_base_url(api_key: &str, base_url: &str) -> Self {
+        Self {
+            api_key: api_key.to_string(),
+            base_url: base_url.to_string(),
+            http_client: reqwest::Client::new(),
+        }
     }
 }
 
@@ -18,12 +39,51 @@ impl Provider for DeepSeekProvider {
         "deepseek"
     }
 
-    async fn chat(&self, _request: ChatRequest) -> Result<ChatResponse> {
+    async fn chat(&self, request: ChatRequest) -> Result<ChatResponse> {
+        let url = format!("{}/v1/chat/completions", self.base_url);
+
+        let body = serde_json::json!({
+            "model": request.model,
+            "messages": request.messages.iter().map(|m| {
+                serde_json::json!({
+                    "role": m.role,
+                    "content": m.content,
+                })
+            }).collect::<Vec<_>>(),
+            "temperature": request.temperature.unwrap_or(0.7),
+            "max_tokens": request.max_tokens.unwrap_or(4096),
+            "stream": false,
+        });
+
+        let resp = self.http_client
+            .post(&url)
+            .header("Authorization", format!("Bearer {}", self.api_key))
+            .header("Content-Type", "application/json")
+            .json(&body)
+            .send()
+            .await
+            .context("DeepSeek API request failed")?;
+
+        if !resp.status().is_success() {
+            let status = resp.status();
+            let text = resp.text().await.unwrap_or_default();
+            anyhow::bail!("DeepSeek API error {}: {}", status, text);
+        }
+
+        let json: serde_json::Value = resp.json().await?;
+
+        let content = json["choices"][0]["message"]["content"]
+            .as_str()
+            .unwrap_or("")
+            .to_string();
+
+        let usage = &json["usage"];
+
         Ok(ChatResponse {
-            content: "DeepSeek placeholder".into(),
-            tokens_input: 0,
-            tokens_output: 0,
-            model: "deepseek-chat".into(),
+            content,
+            tokens_input: usage["prompt_tokens"].as_u64().unwrap_or(0),
+            tokens_output: usage["completion_tokens"].as_u64().unwrap_or(0),
+            model: request.model,
         })
     }
 }

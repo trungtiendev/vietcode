@@ -10,31 +10,43 @@ pub fn run(task: &str) -> Result<()> {
 }
 
 async fn run_async(task: &str) -> Result<()> {
-    // ── Config ─────────────────────────────────────────
+    let provider_name = std::env::var("VIETCODE_PROVIDER")
+        .unwrap_or_else(|_| "ollama".to_string());
+
+    let model = std::env::var("VIETCODE_MODEL").unwrap_or_else(|_| {
+        match provider_name.as_str() {
+            "deepseek" => "deepseek-chat".to_string(),
+            _ => "codellama:7b".to_string(),
+        }
+    });
+
     let cortex_db = ".vietcode/index.db";
-    let ollama_url = std::env::var("OLLAMA_URL")
-        .unwrap_or_else(|_| "http://localhost:11434".to_string());
-    let model = std::env::var("VIETCODE_MODEL")
-        .unwrap_or_else(|_| "codellama:7b".to_string());
 
     println!("VietCode Ask");
-    println!("  Task: {}", task);
+    println!("  Provider: {}", provider_name);
     println!("  Model: {}", model);
-    println!("  Cortex DB: {}", cortex_db);
+    println!("  Task: {}", task);
     println!();
 
-    // ── Provider ───────────────────────────────────────
-    let provider = vietcode_llm::ollama::OllamaProvider::new(&ollama_url);
-    let provider: Arc<dyn vietcode_llm::provider::Provider> = Arc::new(provider);
+    let provider: Arc<dyn vietcode_llm::provider::Provider> = match provider_name.as_str() {
+        "deepseek" => {
+            let api_key = std::env::var("DEEPSEEK_API_KEY")
+                .context("DEEPSEEK_API_KEY chưa được set")?;
+            Arc::new(vietcode_llm::deepseek::DeepSeekProvider::new(&api_key))
+        }
+        _ => {
+            let ollama_url = std::env::var("OLLAMA_URL")
+                .unwrap_or_else(|_| "http://localhost:11434".to_string());
+            Arc::new(vietcode_llm::ollama::OllamaProvider::new(&ollama_url))
+        }
+    };
 
-    // ── Orchestrator ───────────────────────────────────
     let orch = Orchestrator::new(cortex_db);
 
     println!("Đang phân tích task...");
     let result = orch.run(task, provider, &model).await
         .context("Orchestrator failed")?;
 
-    // ── Output ─────────────────────────────────────────
     println!("\n=== KẾT QUẢ ===");
     println!("Tokens: {} (model: {})", result.output.tokens_used, result.output.model);
 
