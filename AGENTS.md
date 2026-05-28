@@ -5,7 +5,7 @@
 4 crates under `crates/`:
 - **vietcode-cortex** — tree-sitter + SQLite codebase index (parser, symbol index, relation graph, file watcher)
 - **vietcode-core** — agent pipeline orchestrator (planner, router, pipeline are stubs)
-- **vietcode-llm** — LLM provider abstraction (`OllamaProvider` and `DeepSeekProvider` are real; `Anthropic`, `OpenAI` are stubs)
+- **vietcode-llm** — LLM provider abstraction (`OllamaProvider`, `DeepSeekProvider`, `AnthropicProvider`, `OpenAIProvider` đã implement đầy đủ)
 - **vietcode-cli** — CLI binary via clap
 
 ## Build & Test
@@ -61,11 +61,23 @@ $env:VIETCODE_PROVIDER = "deepseek"
 $env:DEEPSEEK_API_KEY = "sk-..."
 $env:VIETCODE_MODEL = "deepseek-v4-pro"
 cargo run -- ask "viết hàm authenticate"
+
+# Anthropic (cloud, Claude)
+$env:VIETCODE_PROVIDER = "anthropic"
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+$env:VIETCODE_MODEL = "claude-sonnet-4-20250514"
+cargo run -- ask "viết hàm authenticate"
+
+# OpenAI (cloud, GPT-4)
+$env:VIETCODE_PROVIDER = "openai"
+$env:OPENAI_API_KEY = "sk-..."
+$env:VIETCODE_MODEL = "gpt-4o"
+cargo run -- ask "viết hàm authenticate"
 ```
 
-- `VIETCODE_PROVIDER` — `ollama` (default) hoặc `deepseek`
+- `VIETCODE_PROVIDER` — `ollama` (default), `deepseek`, `anthropic`, hoặc `openai`
 - `OLLAMA_URL` — mặc định `http://localhost:11434`
-- `DEEPSEEK_API_KEY` — bắt buộc khi dùng deepseek
+- `DEEPSEEK_API_KEY` / `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` — bắt buộc khi dùng provider tương ứng
 
 ## Key Conventions
 
@@ -81,7 +93,7 @@ cargo run -- ask "viết hàm authenticate"
 - Symbol index (Tầng 1): works — parse → SQLite + FTS5 full-text search
 - Relation graph (Tầng 2): works — call/import/type edges with BFS shortest-path
 - Core pipeline: **stubs** — `Planner`, `Router`, `FileWatcher` return no-op/dummy; `Pipeline` gates (build/test) now real
-- LLM providers: Ollama + DeepSeek work; Anthropic/OpenAI are still stubs
+- LLM providers: Ollama + DeepSeek + Anthropic + OpenAI all work
 - CI/CD: GitHub Actions (`.github/workflows/ci.yml`) — build + test on push/PR yet
 
 ## Gotchas

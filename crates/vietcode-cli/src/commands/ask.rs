@@ -16,6 +16,8 @@ async fn run_async(task: &str) -> Result<()> {
     let model = std::env::var("VIETCODE_MODEL").unwrap_or_else(|_| {
         match provider_name.as_str() {
             "deepseek" => "deepseek-v4-pro".to_string(),
+            "anthropic" => "claude-sonnet-4-20250514".to_string(),
+            "openai" => "gpt-4o".to_string(),
             _ => "codellama:7b".to_string(),
         }
     });
@@ -33,6 +35,16 @@ async fn run_async(task: &str) -> Result<()> {
             let api_key = std::env::var("DEEPSEEK_API_KEY")
                 .context("DEEPSEEK_API_KEY chưa được set")?;
             Arc::new(vietcode_llm::deepseek::DeepSeekProvider::new(&api_key))
+        }
+        "anthropic" => {
+            let api_key = std::env::var("ANTHROPIC_API_KEY")
+                .context("ANTHROPIC_API_KEY chưa được set")?;
+            Arc::new(vietcode_llm::anthropic::AnthropicProvider::new(&api_key))
+        }
+        "openai" => {
+            let api_key = std::env::var("OPENAI_API_KEY")
+                .context("OPENAI_API_KEY chưa được set")?;
+            Arc::new(vietcode_llm::openai::OpenAIProvider::new(&api_key))
         }
         _ => {
             let ollama_url = std::env::var("OLLAMA_URL")

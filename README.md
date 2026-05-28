@@ -90,6 +90,20 @@ $env:VIETCODE_MODEL = "deepseek-v4-pro"
 cargo run -- ask "viết hàm authenticate trong file src/auth.rs"
 ```
 
+**Anthropic** (cloud):
+```powershell
+$env:VIETCODE_PROVIDER = "anthropic"
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+cargo run -- ask "viết hàm authenticate trong file src/auth.rs"
+```
+
+**OpenAI** (cloud):
+```powershell
+$env:VIETCODE_PROVIDER = "openai"
+$env:OPENAI_API_KEY = "sk-..."
+cargo run -- ask "viết hàm authenticate trong file src/auth.rs"
+```
+
 Sau khi sinh code, pipeline tự động chạy `cargo build` + `cargo test` để verify.
 
 ## Kiến trúc
@@ -118,9 +132,10 @@ vietcode/
 | Relation graph (Tầng 2) | ✓ Hoạt động |
 | Ollama provider | ✓ Hoạt động |
 | DeepSeek provider | ✓ Hoạt động |
+| Anthropic provider | ✓ Hoạt động |
+| OpenAI provider | ✓ Hoạt động |
 | Pipeline gates (build/test) | ✓ Hoạt động |
 | CI/CD (GitHub Actions) | ✓ Ubuntu + Windows |
-| Anthropic/OpenAI providers | Stub |
 | Planner, Router, FileWatcher | Stub |
 | Tầng 3 (Semantic) | Chưa bắt đầu |
 
